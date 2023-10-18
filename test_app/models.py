@@ -28,7 +28,7 @@ class Product(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return self.name
+        return str(self.pk)
 
     def get_child_shelf(self):
         child_list = self.child_shelving.get_queryset()
@@ -48,10 +48,10 @@ class Order(models.Model):
 
 
 class PartOrder(models.Model):
-    parent_order = models.ForeignKey('Order', on_delete=models.CASCADE)
+    parent_order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='parent_order')
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='product_for_order')
     quantity_products_in_order = models.PositiveSmallIntegerField(default=1)
     objects = models.Manager()
 
     def __str__(self):
-        return str(self.product.name)
+        return str(self.product.pk)
