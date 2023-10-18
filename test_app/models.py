@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Shelving(models.Model):
@@ -23,6 +24,7 @@ class Product(models.Model):
     shelving = models.ForeignKey('Shelving', on_delete=models.CASCADE, related_name='shelving')
     child_shelving = models.ManyToManyField('Shelving', blank=True, related_name='child_shelving')
     quantity_products_in_stock = models.PositiveSmallIntegerField()
+    price = models.IntegerField(blank=True, null=True)
     objects = models.Manager()
 
     def __str__(self):
@@ -37,11 +39,19 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    quantity_products_in_order = models.PositiveSmallIntegerField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    number = models.IntegerField(default=10)
     objects = models.Manager()
 
     def __str__(self):
-        return self.product
+        return str(self.number)
 
 
+class PartOrder(models.Model):
+    parent_order = models.ForeignKey('Order', on_delete=models.CASCADE)
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='product_for_order')
+    quantity_products_in_order = models.PositiveSmallIntegerField(default=1)
+    objects = models.Manager()
+
+    def __str__(self):
+        return str(self.product.name)
